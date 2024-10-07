@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>admin_group_manager</id>
+    <name>WordPress Login</name>
+    <summary>Admin group manager</summary>
+    <description><![CDATA[
+Manage routines associates to admin groups]]></description>
+    <version>0.1.0</version>
+    <licence>agpl</licence>
+    <author mail="vitor@librecode.coop" >Vitor Mattos</author>
+    <namespace>AdminGroupManager</namespace>
+    <types>
+        <prelogin/>
+        <authentication/>
+    </types>
+    <documentation>
+        <admin>https://github.com/libresign/admin_group_manager/blob/master/README.md</admin>
+    </documentation>
+    <category>security</category>
+    <bugs>https://github.com/libresign/admin_group_manager/issues</bugs>
+    <repository type="git">https://github.com/libresign/admin_group_manager</repository>
+    <dependencies>
+        <nextcloud min-version="30" max-version="31"/>
+    </dependencies>
+</info>
