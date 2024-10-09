@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2024 LibreCode coop and contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+version: 2
+updates:
+  # Maintain dependencies for Composer
+  - package-ecosystem: "composer" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
