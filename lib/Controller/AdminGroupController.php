@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace OCA\AdminGroupManager\Controller;
 
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
-use OCA\Provisioning_API\Controller\AUserData;
 use OCA\Settings\Settings\Admin\Users;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Http;
