@@ -6,8 +6,10 @@
     </FalsableReturnStatement>
     <InvalidArgument>
       <code><![CDATA[Users::class]]></code>
+      <code><![CDATA[Users::class]]></code>
     </InvalidArgument>
     <UndefinedClass>
+      <code><![CDATA[Users]]></code>
       <code><![CDATA[Users]]></code>
       <code><![CDATA[\OC_Helper]]></code>
     </UndefinedClass>

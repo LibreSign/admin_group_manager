@@ -76,6 +76,37 @@ class AdminGroupController extends AEnvironmentAwareController {
 	}
 
 	/**
+	 * Set enabled status
+	 *
+	 * Change the status of all users of a group to be enabled or not.
+	 *
+	 * @param string $groupid ID of the group
+	 * @param int<0, 1> $enabled 1 or 0
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_NOT_FOUND, array<empty>, array{}>
+	 *
+	 * 200: OK
+	 * 401: Unauthorized
+	 * 404: Group not found
+	 */
+	#[ApiRoute(verb: 'POST', url: '/api/{apiVersion}/users-of-group/set-enabled', requirements: ['apiVersion' => '(v1)'])]
+	#[AuthorizedAdminSetting(settings:Users::class)]
+	#[RestrictIp]
+	public function setEnabled(
+		string $groupid,
+		int $enabled,
+	): DataResponse {
+		$group = $this->groupManager->get($groupid);
+		if (!$group instanceof IGroup) {
+			return new DataResponse([], Http::STATUS_NOT_FOUND);
+		}
+		$users = $group->getUsers();
+		foreach ($users as $user) {
+			$user->setEnabled((bool)$enabled);
+		}
+		return new DataResponse();
+	}
+
+	/**
 	 * Make a user a subadmin of a group
 	 *
 	 * @param string $userId ID of the user
