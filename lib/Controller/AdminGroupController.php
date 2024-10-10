@@ -71,6 +71,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 		$this->setGroupQuota($groupid, $quota);
 		$this->enableApps($apps, $groupid);
 		$user = $this->createUser($groupid, $displayname);
+		$group->addUser($user);
 		$this->addSubAdmin($user, $group);
 		return new DataResponse();
 	}
