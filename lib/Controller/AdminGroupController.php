@@ -26,6 +26,7 @@ use OCP\IGroupManager;
 use OCP\IRequest;
 use OCP\IUser;
 use OCP\IUserManager;
+use OCP\Mail\IMailer;
 use OCP\Security\Events\GenerateSecurePasswordEvent;
 use OCP\Security\ISecureRandom;
 use Psr\Log\LoggerInterface;
@@ -37,6 +38,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 		protected LoggerInterface $logger,
 		protected IGroupManager $groupManager,
 		protected IUserManager $userManager,
+		protected IMailer $mailer,
 		protected ISubAdmin $subAdmin,
 		protected IAppManager $appManager,
 		protected IAppConfig $appConfig,
@@ -54,6 +56,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 	 *
 	 * @param string $groupid ID of the group
 	 * @param string $displayname Display name of the group
+	 * @param string $email Email of admin
 	 * @param string $quota Group quota in "human readable" format. Default value is 1Gb.
 	 * @param list<string> $apps List of app ids to enable
 	 * @return DataResponse<Http::STATUS_OK, array<empty>, array{}>
@@ -67,13 +70,14 @@ class AdminGroupController extends AEnvironmentAwareController {
 	public function createAdminGroup(
 		string $groupid,
 		string $displayname = '',
+		string $email = '',
 		string $quota = '1Gb',
 		array $apps = [],
 	): DataResponse {
 		$group = $this->addGroup($groupid, $displayname);
 		$this->setGroupQuota($groupid, $quota);
 		$this->enableApps($apps, $groupid);
-		$user = $this->createUser($groupid, $displayname);
+		$user = $this->createUser($groupid, $displayname, $email);
 		$group->addUser($user);
 		$this->addSubAdmin($user, $group);
 		return new DataResponse();
@@ -125,7 +129,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 		$this->subAdmin->createSubAdmin($user, $group);
 	}
 
-	private function createUser($userId, $displayName): IUser {
+	private function createUser($userId, $displayName, $email): IUser {
 		$passwordEvent = new GenerateSecurePasswordEvent();
 		$this->eventDispatcher->dispatchTyped($passwordEvent);
 		$password = $passwordEvent->getPassword() ?? $this->secureRandom->generate(20);
@@ -139,6 +143,12 @@ class AdminGroupController extends AEnvironmentAwareController {
 				$user->delete();
 				throw $e;
 			}
+		}
+		if ($email !== '') {
+			if (!$this->mailer->validateMailAddress($email)) {
+				throw new OCSException('Invalid email');
+			}
+			$user->setSystemEMailAddress($email);
 		}
 		return $user;
 	}
@@ -169,6 +179,9 @@ class AdminGroupController extends AEnvironmentAwareController {
 	}
 
 	private function enableApps(array $appIds, string $groupId): void {
+		if (!$appIds) {
+			return;
+		}
 		$this->jobList->add(EnableAppsForGroup::class, [
 			'groupId' => $groupId,
 			'appIds' => $appIds,

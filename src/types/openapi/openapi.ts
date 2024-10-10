@@ -89,6 +89,11 @@ export interface operations {
                      */
                     displayname?: string;
                     /**
+                     * @description Email of admin
+                     * @default
+                     */
+                    email?: string;
+                    /**
                      * @description Group quota in "human readable" format. Default value is 1Gb.
                      * @default 1Gb
                      */
