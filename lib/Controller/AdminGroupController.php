@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace OCA\AdminGroupManager\Controller;
 
+use OCA\AdminGroupManager\BackgroundJob\EnableAppsForGroup;
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
 use OCA\Settings\Settings\Admin\Users;
 use OCP\App\IAppManager;
@@ -16,6 +17,7 @@ use OCP\AppFramework\Http\Attribute\ApiRoute;
 use OCP\AppFramework\Http\Attribute\AuthorizedAdminSetting;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\OCS\OCSException;
+use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Group\ISubAdmin;
 use OCP\IAppConfig;
@@ -40,6 +42,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 		protected IAppConfig $appConfig,
 		protected IEventDispatcher $eventDispatcher,
 		protected ISecureRandom $secureRandom,
+		protected IJobList $jobList,
 	) {
 		parent::__construct($appName, $request);
 	}
@@ -165,23 +168,10 @@ class AdminGroupController extends AEnvironmentAwareController {
 		$this->appConfig->setValueString('groupquota', 'quota_' . $groupId, (string)$quota);
 	}
 
-	/**
-	 * TODO: Identify a best approach, the list of apps enabled to a group is a
-	 * json field at appsettings table, could have problems with simultaneous
-	 * update and also could be a very big array.
-	 *
-	 * @param array $appIds
-	 * @param string $groupId
-	 * @return void
-	 */
 	private function enableApps(array $appIds, string $groupId): void {
-		foreach ($appIds as $appId) {
-			$appId = $this->appManager->cleanAppId($appId);
-			$enabled = $this->appConfig->getValueArray($appId, 'enabled', []);
-			if (!in_array($groupId, $enabled)) {
-				$enabled[] = $groupId;
-				$this->appManager->enableAppForGroups($appId, $enabled);
-			}
-		}
+		$this->jobList->add(EnableAppsForGroup::class, [
+			'groupId' => $groupId,
+			'appIds' => $appIds,
+		]);
 	}
 }

@@ -23,4 +23,7 @@ Manage routines associates to admin groups]]></description>
     <dependencies>
         <nextcloud min-version="30" max-version="31"/>
     </dependencies>
+    <background-jobs>
+        <job>OCA\AdminGroupManager\BackgroundJob\EnableAppsForGroup</job>
+    </background-jobs>
 </info>
