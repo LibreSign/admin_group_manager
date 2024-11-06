@@ -16,12 +16,14 @@ use OCP\AppFramework\Middleware;
 use OCP\AppFramework\OCS\OCSException;
 use OCP\IConfig;
 use OCP\IRequest;
+use Psr\Log\LoggerInterface;
 
 class InjectionMiddleware extends Middleware {
 
 	public function __construct(
 		private IRequest $request,
 		private IConfig $config,
+		private LoggerInterface $logger,
 	) {
 		$this->request = $request;
 	}
@@ -49,6 +51,7 @@ class InjectionMiddleware extends Middleware {
 		$ip = $this->request->getRemoteAddress();
 		$allowed = $this->config->getSystemValue('admin_group_manager_allowed_ip');
 		if ($allowed !== $ip) {
+			$this->logger->error('Unauthorized access to API', ['IP' => $ip]);
 			throw new OCSException('', Http::STATUS_UNAUTHORIZED);
 		}
 	}
