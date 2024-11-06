@@ -56,7 +56,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 	 * @param string $displayname Display name of the group
 	 * @param string $quota Group quota in "human readable" format. Default value is 1Gb.
 	 * @param list<string> $apps List of app ids to enable
-	 * @return DataResponse<Http::STATUS_OK, array<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK, list<empty>, array{}>
 	 *
 	 * 200: OK
 	 * 401: Unauthorized
@@ -86,7 +86,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 	 *
 	 * @param string $groupid ID of the group
 	 * @param int<0, 1> $enabled 1 or 0
-	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_NOT_FOUND, array<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_NOT_FOUND, list<empty>, array{}>
 	 *
 	 * 200: OK
 	 * 401: Unauthorized
