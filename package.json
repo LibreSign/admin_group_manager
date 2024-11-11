@@ -21,6 +21,6 @@
     "npm": "^10.0.0"
   },
   "devDependencies": {
-    "openapi-typescript": "^7.4.2"
+    "openapi-typescript": "^7.4.3"
   }
 }
