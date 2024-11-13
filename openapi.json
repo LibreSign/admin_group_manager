@@ -82,6 +82,11 @@
                                         "default": "",
                                         "description": "Display name of the group"
                                     },
+                                    "email": {
+                                        "type": "string",
+                                        "default": "",
+                                        "description": "Email of admin"
+                                    },
                                     "quota": {
                                         "type": "string",
                                         "default": "1Gb",
