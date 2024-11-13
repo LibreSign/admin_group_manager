@@ -16,6 +16,18 @@ Available features:
 	occ app:enable admin_group_manager
 	occ app:enable groupquota
 	```
+- Allowed IP
+
+	By security, this API only receive requests from a specific IP.
+	- Run a tail with grep to watch by the word "Unauthorized access".
+		```bash
+		tail -f data/nextcloud.log|grep "Unauthorized access"
+		```
+	- Do a request to API endpoint and go back to terminal to check the logs and get the IP.
+	- With the IP, run the follow command:
+		```bash
+		occ config:system:set admin_group_manager_allowed_ip --value <theIdentifiedIp>
+		```
 
 ## Performance improving
 Systemd service
