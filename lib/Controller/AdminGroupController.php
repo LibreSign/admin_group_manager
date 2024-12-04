@@ -15,6 +15,7 @@ use OCP\App\IAppManager;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\Attribute\ApiRoute;
 use OCP\AppFramework\Http\Attribute\AuthorizedAdminSetting;
+use OCP\AppFramework\Http\Attribute\NoCSRFRequired;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\OCS\OCSException;
 use OCP\BackgroundJob\IJobList;
@@ -66,6 +67,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 	 */
 	#[ApiRoute(verb: 'POST', url: '/api/{apiVersion}/admin-group', requirements: ['apiVersion' => '(v1)'])]
 	#[AuthorizedAdminSetting(settings:Users::class)]
+	#[NoCSRFRequired]
 	#[RestrictIp]
 	public function createAdminGroup(
 		string $groupid,
@@ -98,6 +100,7 @@ class AdminGroupController extends AEnvironmentAwareController {
 	 */
 	#[ApiRoute(verb: 'POST', url: '/api/{apiVersion}/users-of-group/set-enabled', requirements: ['apiVersion' => '(v1)'])]
 	#[AuthorizedAdminSetting(settings:Users::class)]
+	#[NoCSRFRequired]
 	#[RestrictIp]
 	public function setEnabled(
 		string $groupid,
