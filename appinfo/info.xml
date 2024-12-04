@@ -2,7 +2,7 @@
 <info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>admin_group_manager</id>
-    <name>WordPress Login</name>
+    <name>Admin group manager</name>
     <summary>Admin group manager</summary>
     <description><![CDATA[
 Manage routines associates to admin groups]]></description>
