@@ -118,6 +118,37 @@ class AdminGroupController extends AEnvironmentAwareController {
 	}
 
 	/**
+	 * Change the email of admin of a group
+	 *
+	 * @param string $userId User ID of account that is admin of a group
+	 * @param string $email New email
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_NOT_FOUND, list<empty>, array{}>
+	 *
+	 * 200: OK
+	 * 401: Unauthorized
+	 * 404: Group or email not found
+	 */
+	#[ApiRoute(verb: 'POST', url: '/api/{apiVersion}/change-admin-email', requirements: ['apiVersion' => '(v1)'])]
+	#[AuthorizedAdminSetting(settings:Users::class)]
+	#[NoCSRFRequired]
+	#[RestrictIp]
+	public function changeAdminEmail(
+		string $userId,
+		string $email,
+	): DataResponse {
+		$group = $this->groupManager->get($userId);
+		if (!$group instanceof IGroup) {
+			return new DataResponse([], Http::STATUS_NOT_FOUND);
+		}
+		$user = $this->userManager->get($userId);
+		if (!$user instanceof IUser) {
+			return new DataResponse([], Http::STATUS_NOT_FOUND);
+		}
+		$user->setSystemEMailAddress($email);
+		return new DataResponse();
+	}
+
+	/**
 	 * Make a user a subadmin of a group
 	 *
 	 * @param string $userId ID of the user
