@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace OCA\AdminGroupManager\Middleware;
 
-use OCA\AdminGroupManager\Controller\AEnvironmentAwareController;
+use OCA\AdminGroupManager\Controller\AEnvironmentAwareOCSController;
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -34,9 +34,9 @@ class InjectionMiddleware extends Middleware {
 	 * @throws \Exception
 	 */
 	public function beforeController(Controller $controller, string $methodName) {
-		if ($controller instanceof AEnvironmentAwareController) {
+		if ($controller instanceof AEnvironmentAwareOCSController) {
 			$apiVersion = $this->request->getParam('apiVersion');
-			/** @var AEnvironmentAwareController $controller */
+			/** @var AEnvironmentAwareOCSController $controller */
 			$controller->setAPIVersion((int)substr($apiVersion, 1));
 		}
 

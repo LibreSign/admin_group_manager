@@ -32,7 +32,7 @@ use OCP\Security\Events\GenerateSecurePasswordEvent;
 use OCP\Security\ISecureRandom;
 use Psr\Log\LoggerInterface;
 
-class AdminGroupController extends AEnvironmentAwareController {
+class AdminGroupController extends AEnvironmentAwareOCSController {
 	public function __construct(
 		$appName,
 		IRequest $request,
