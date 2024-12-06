@@ -164,6 +164,10 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	}
 
 	private function createUser($userId, $displayName, $email): IUser {
+		$user = $this->userManager->get($userId);
+		if ($user instanceof IUser) {
+			return $user;
+		}
 		$passwordEvent = new GenerateSecurePasswordEvent();
 		$this->eventDispatcher->dispatchTyped($passwordEvent);
 		$password = $passwordEvent->getPassword() ?? $this->secureRandom->generate(20);
@@ -194,15 +198,22 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			throw new OCSException('Invalid group name', 101);
 		}
 		// Check if it exists
-		if ($this->groupManager->groupExists($groupid)) {
-			throw new OCSException('group exists', 102);
+		$group = $this->groupManager->get($groupid);
+		if ($group instanceof IGroup) {
+			$users = $group->getUsers();
+			foreach ($users as $user) {
+				$user->setEnabled(true);
+			}
+		} else {
+			$group = $this->groupManager->createGroup($groupid);
 		}
-		$group = $this->groupManager->createGroup($groupid);
 		if ($group === null) {
 			throw new OCSException('Not supported by backend', 103);
 		}
 		if ($displayname !== '') {
-			$group->setDisplayName($displayname);
+			if ($group->getDisplayName() !== $displayname) {
+				$group->setDisplayName($displayname);
+			}
 		}
 		return $group;
 	}
