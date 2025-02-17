@@ -16,17 +16,16 @@ Available features:
 	occ app:enable admin_group_manager
 	occ app:enable groupquota
 	```
-- Allowed IP
+- Allowed IP range
 
-	By security, this API only receive requests from a specific IP.
-	- Run a tail with grep to watch by the word "Unauthorized access".
+	By security, this API only receive requests from a specific IP range. This could be enabled or not. To enable you will need to run the follow command:
+	```bash
+	occ config:system:set admin_group_manager_allowed_range 0 --value <theWordPressIp>
+	```
+
+	To test if your setting is working fine, use a IP range that don't match with WordPressIP and tun a tail with grep to watch by the word "Unauthorized access".
 		```bash
 		tail -f data/nextcloud.log|grep "Unauthorized access"
-		```
-	- Do a request to API endpoint and go back to terminal to check the logs and get the IP.
-	- With the IP, run the follow command:
-		```bash
-		occ config:system:set admin_group_manager_allowed_ip --value <theIdentifiedIp>
 		```
 
 ## Performance improving
