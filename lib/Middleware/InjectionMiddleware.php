@@ -8,6 +8,8 @@ declare(strict_types=1);
 
 namespace OCA\AdminGroupManager\Middleware;
 
+use OC\Security\Ip\Address;
+use OC\Security\Ip\Range;
 use OCA\AdminGroupManager\Controller\AEnvironmentAwareOCSController;
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
 use OCP\AppFramework\Controller;
@@ -48,11 +50,19 @@ class InjectionMiddleware extends Middleware {
 	}
 
 	private function restrictIp(): void {
-		$ip = $this->request->getRemoteAddress();
-		$allowed = $this->config->getSystemValue('admin_group_manager_allowed_ip');
-		if ($allowed !== $ip) {
-			$this->logger->error('Unauthorized access to API', ['IP' => $ip]);
-			throw new OCSException('', Http::STATUS_UNAUTHORIZED);
+		$ip = new Address(
+			$this->request->getRemoteAddress()
+		);
+		$ranges = $this->config->getSystemValue('admin_group_manager_allowed_range');
+		if (!is_array($ranges) || empty($ranges)) {
+			return;
 		}
+		foreach ($ranges as $range) {
+			if ((new Range($range))->contains($ip)) {
+				return;
+			}
+		}
+		$this->logger->error('Unauthorized access to API', ['IP' => $ip]);
+		throw new OCSException('', Http::STATUS_UNAUTHORIZED);
 	}
 }
