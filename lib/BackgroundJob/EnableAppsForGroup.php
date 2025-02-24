@@ -41,7 +41,20 @@ class EnableAppsForGroup extends QueuedJob {
 			if ($enabled !== $toSave) {
 				$this->appManager->enableAppForGroups($appId, $toSave);
 			}
+			$this->enableLibreSign($appId);
 		}
+	}
+
+	private function enableLibreSign(string $appId): void {
+		if ($appId !== 'libresign') {
+			return;
+		}
+		$authorized = $this->appConfig->getValueArray('libresign', 'groups_request_sign', ['admin']);
+		if (in_array($this->groupId, $authorized)) {
+			return;
+		}
+		$authorized[] = $this->groupId;
+		$this->appConfig->setValueArray('libresign', 'groups_request_sign', $authorized);
 	}
 
 	private function validateAndProccessArguments($argument): bool {
