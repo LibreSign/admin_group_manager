@@ -165,14 +165,13 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 
 	private function createUser($userId, $displayName, $email): IUser {
 		$user = $this->userManager->get($userId);
-		if ($user instanceof IUser) {
-			return $user;
-		}
-		$passwordEvent = new GenerateSecurePasswordEvent();
-		$this->eventDispatcher->dispatchTyped($passwordEvent);
-		$password = $passwordEvent->getPassword() ?? $this->secureRandom->generate(20);
+		if (!$user instanceof IUser) {
+			$passwordEvent = new GenerateSecurePasswordEvent();
+			$this->eventDispatcher->dispatchTyped($passwordEvent);
+			$password = $passwordEvent->getPassword() ?? $this->secureRandom->generate(20);
 
-		$user = $this->userManager->createUser($userId, $password);
+			$user = $this->userManager->createUser($userId, $password);
+		}
 
 		if ($displayName !== '') {
 			try {
