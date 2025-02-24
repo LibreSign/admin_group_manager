@@ -31,10 +31,15 @@ class EnableAppsForGroup extends QueuedJob {
 		}
 		foreach ($this->appIds as $appId) {
 			$appId = $this->appManager->cleanAppId($appId);
-			$enabled = $this->appConfig->getValueArray($appId, 'enabled', []);
-			if (!in_array($this->groupId, $enabled)) {
-				$enabled[] = $this->groupId;
-				$this->appManager->enableAppForGroups($appId, $enabled);
+			$toSave = $enabled = $this->appConfig->getValueArray($appId, 'enabled', []);
+			if (!in_array($this->groupId, $toSave)) {
+				$toSave[] = $this->groupId;
+			}
+			if (!in_array('admin', $toSave)) {
+				$toSave[] = 'admin';
+			}
+			if ($enabled !== $toSave) {
+				$this->appManager->enableAppForGroups($appId, $toSave);
 			}
 		}
 	}
