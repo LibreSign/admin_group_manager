@@ -218,7 +218,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	}
 
 	private function setGroupQuota(string $groupId, string $quota): void {
-		$quota = \OC_Helper::computerFileSize($quota);
+		$quota = \OCP\Util::computerFileSize($quota);
 		$this->appConfig->setValueString('groupquota', 'quota_' . $groupId, (string)$quota);
 	}
 
