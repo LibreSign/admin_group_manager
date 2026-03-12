@@ -13,6 +13,10 @@ Types of changes:
 - *Security* in case of vulnerabilities. 
 
 <!-- changelog-linker -->
+## 0.1.1 - 2026-03-12
+### Changed
+* Declare compatibility with Nextcloud 33.
+
 ## 0.1.0 - 2024-10-04
 ### New feature
 * Hi

@@ -6,7 +6,7 @@
     <summary>Admin group manager</summary>
     <description><![CDATA[
 Manage routines associates to admin groups]]></description>
-    <version>0.1.0</version>
+    <version>0.1.1</version>
     <licence>agpl</licence>
     <author mail="vitor@librecode.coop" >Vitor Mattos</author>
     <namespace>AdminGroupManager</namespace>
@@ -21,7 +21,7 @@ Manage routines associates to admin groups]]></description>
     <bugs>https://github.com/libresign/admin_group_manager/issues</bugs>
     <repository type="git">https://github.com/libresign/admin_group_manager</repository>
     <dependencies>
-        <nextcloud min-version="30" max-version="31"/>
+        <nextcloud min-version="30" max-version="33"/>
     </dependencies>
     <background-jobs>
         <job>OCA\AdminGroupManager\BackgroundJob\EnableAppsForGroup</job>
