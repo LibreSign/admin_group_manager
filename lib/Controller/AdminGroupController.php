@@ -80,6 +80,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		$this->setGroupQuota($groupid, $quota);
 		$this->enableApps($apps, $groupid);
 		$user = $this->createUser($groupid, $displayname, $email);
+		$this->setUserQuota($user, $quota);
 		$group->addUser($user);
 		$this->addSubAdmin($user, $group);
 		return new DataResponse();
@@ -220,6 +221,10 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	private function setGroupQuota(string $groupId, string $quota): void {
 		$quota = \OCP\Util::computerFileSize($quota);
 		$this->appConfig->setValueString('groupquota', 'quota_' . $groupId, (string)$quota);
+	}
+
+	private function setUserQuota(IUser $user, string $quota): void {
+		$user->setQuota($quota);
 	}
 
 	private function enableApps(array $appIds, string $groupId): void {
