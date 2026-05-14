@@ -21,7 +21,7 @@ Manage routines associates to admin groups]]></description>
     <bugs>https://github.com/libresign/admin_group_manager/issues</bugs>
     <repository type="git">https://github.com/libresign/admin_group_manager</repository>
     <dependencies>
-        <nextcloud min-version="30" max-version="33"/>
+        <nextcloud min-version="30" max-version="34"/>
     </dependencies>
     <background-jobs>
         <job>OCA\AdminGroupManager\BackgroundJob\EnableAppsForGroup</job>
