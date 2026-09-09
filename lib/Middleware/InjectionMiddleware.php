@@ -56,13 +56,13 @@ class InjectionMiddleware extends Middleware {
 			return;
 		}
 		$rangeObjects = array_map(
-			fn(string $range) => new \OC\Security\Ip\Range($range),
+			fn (string $range) => new \OC\Security\Ip\Range($range),
 			$ranges
 		);
 		if ($ip->matches(...$rangeObjects)) {
 			return;
 		}
-		$this->logger->error('Unauthorized access to API', ['IP' => (string)$ip]);
+		$this->logger->error('Unauthorized access to API', ['IP' => $remoteAddress]);
 		throw new OCSException('', Http::STATUS_UNAUTHORIZED);
 	}
 }
