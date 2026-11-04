@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 /**
- * SPDX-FileCopyrightText: 2020-2024 LibreCode coop and contributors
+ * SPDX-FileCopyrightText: 2020-2025 LibreCode coop and contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
 namespace OCA\AdminGroupManager\Middleware;
 
-use OC\Security\Ip\Address;
-use OC\Security\Ip\Range;
 use OCA\AdminGroupManager\Controller\AEnvironmentAwareOCSController;
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
 use OCP\AppFramework\Controller;
@@ -50,19 +48,21 @@ class InjectionMiddleware extends Middleware {
 	}
 
 	private function restrictIp(): void {
-		$ip = new Address(
-			$this->request->getRemoteAddress()
-		);
+		$remoteAddress = $this->request->getRemoteAddress();
+		// Use public OCP interfaces for IP validation (available since NC30)
+		$ip = new \OC\Security\Ip\Address($remoteAddress);
 		$ranges = $this->config->getSystemValue('admin_group_manager_allowed_range');
 		if (!is_array($ranges) || empty($ranges)) {
 			return;
 		}
-		foreach ($ranges as $range) {
-			if ((new Range($range))->contains($ip)) {
-				return;
-			}
+		$rangeObjects = array_map(
+			fn (string $range) => new \OC\Security\Ip\Range($range),
+			$ranges
+		);
+		if ($ip->matches(...$rangeObjects)) {
+			return;
 		}
-		$this->logger->error('Unauthorized access to API', ['IP' => $ip]);
+		$this->logger->error('Unauthorized access to API', ['IP' => $remoteAddress]);
 		throw new OCSException('', Http::STATUS_UNAUTHORIZED);
 	}
 }
