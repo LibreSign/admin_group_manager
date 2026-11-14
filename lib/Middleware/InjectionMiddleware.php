@@ -35,6 +35,7 @@ class InjectionMiddleware extends Middleware {
 	 * @param string $methodName
 	 * @throws \Exception
 	 */
+	#[\Override]
 	public function beforeController(Controller $controller, string $methodName) {
 		if ($controller instanceof AEnvironmentAwareOCSController) {
 			$apiVersion = $this->request->getParam('apiVersion');

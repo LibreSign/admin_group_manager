@@ -27,11 +27,6 @@
                 <referencedClass name="OC\*" />
             </errorLevel>
         </UndefinedClass>
-        <UndefinedDocblockClass>
-            <errorLevel type="suppress">
-                <referencedClass name="OC\*" />
-            </errorLevel>
-        </UndefinedDocblockClass>
     </issueHandlers>
     <stubs>
         <file name="tests/stubs/oc_hooks_emitter.php" />

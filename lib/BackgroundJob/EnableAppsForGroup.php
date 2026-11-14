@@ -24,6 +24,7 @@ class EnableAppsForGroup extends QueuedJob {
 	) {
 		parent::__construct($time);
 	}
+	#[\Override]
 	protected function run($argument): void {
 		$this->setAllowParallelRuns(false);
 		if (!$this->validateAndProccessArguments($argument)) {
