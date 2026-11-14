@@ -36,7 +36,7 @@ export type paths = {
         put?: never;
         /**
          * Set enabled status
-         * @description Change the status of all users of a group to be enabled or not.
+         * @description Disable the enabled users of a group, or enable again only the users that this endpoint disabled. Administrators are never changed.
          *     This endpoint requires admin access
          */
         post: operations["admin_group-set-enabled"];

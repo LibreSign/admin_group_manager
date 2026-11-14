@@ -13,6 +13,10 @@ Types of changes:
 - *Security* in case of vulnerabilities. 
 
 <!-- changelog-linker -->
+## Unreleased
+### Security
+* Enabling the users of a group, on `users-of-group/set-enabled` or when the group is provisioned again, now only enables the users that `users-of-group/set-enabled` disabled. Users disabled by the group admin stay disabled. Users disabled by billing before this version are not enabled again automatically; the group admin enables them in the users settings.
+
 ## 0.1.1 - 2026-03-12
 ### Changed
 * Declare compatibility with Nextcloud 33.
