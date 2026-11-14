@@ -16,9 +16,13 @@ Available features:
 	occ app:enable admin_group_manager
 	occ app:enable groupquota
 	```
+- Service account
+
+	Call this API with a dedicated account that is not in the `admin` group. Put this account in a group that has the "Users" admin section delegated to it (Administration settings > Administration privileges). This account is also able to change the password of users that are not admins through the provisioning API.
+
 - Allowed IP range
 
-	By security, this API only receive requests from a specific IP range. This could be enabled or not. To enable you will need to run the follow command:
+	This API only receives requests from the configured IP range. The range is optional for compatibility, but it is required in production. Set it with the following command:
 	```bash
 	occ config:system:set admin_group_manager_allowed_range 0 --value <theWordPressIp>
 	```
