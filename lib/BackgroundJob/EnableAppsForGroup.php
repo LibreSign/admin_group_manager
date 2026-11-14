@@ -31,7 +31,14 @@ class EnableAppsForGroup extends QueuedJob {
 			return;
 		}
 		foreach ($this->appIds as $appId) {
+			if (!is_string($appId)) {
+				continue;
+			}
 			$appId = $this->appManager->cleanAppId($appId);
+			if ($this->appConfig->getValueString($appId, 'enabled', '') === 'yes') {
+				$this->enableLibreSign($appId);
+				continue;
+			}
 			$toSave = $enabled = $this->appConfig->getValueArray($appId, 'enabled', []);
 			if (!in_array($this->groupId, $toSave)) {
 				$toSave[] = $this->groupId;
