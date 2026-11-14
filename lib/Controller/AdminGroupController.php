@@ -113,6 +113,9 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		}
 		$users = $group->getUsers();
 		foreach ($users as $user) {
+			if ($this->isAdministrator($user)) {
+				continue;
+			}
 			$user->setEnabled((bool)$enabled);
 		}
 		return new DataResponse();
@@ -202,6 +205,9 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		if ($group instanceof IGroup) {
 			$users = $group->getUsers();
 			foreach ($users as $user) {
+				if ($this->isAdministrator($user)) {
+					continue;
+				}
 				$user->setEnabled(true);
 			}
 		} else {
@@ -216,6 +222,11 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			}
 		}
 		return $group;
+	}
+
+	private function isAdministrator(IUser $user): bool {
+		return $this->groupManager->isAdmin($user->getUID())
+			|| $this->groupManager->isDelegatedAdmin($user->getUID());
 	}
 
 	private function setGroupQuota(string $groupId, string $quota): void {
