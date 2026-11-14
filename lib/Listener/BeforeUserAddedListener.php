@@ -30,6 +30,7 @@ class BeforeUserAddedListener implements IEventListener {
 	) {
 	}
 
+	#[\Override]
 	public function handle(Event $event): void {
 		if (!$event instanceof BeforeUserAddedEvent) {
 			return;
