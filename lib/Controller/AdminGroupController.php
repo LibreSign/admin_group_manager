@@ -60,10 +60,12 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	 * @param string $email Email of admin
 	 * @param string $quota Group quota in "human readable" format. Default value is 1Gb.
 	 * @param list<string> $apps List of app ids to enable
-	 * @return DataResponse<Http::STATUS_OK, list<empty>, array{}>
+	 * @return DataResponse<Http::STATUS_OK|Http::STATUS_CONFLICT, list<empty>, array{}>
+	 * @throws OCSException
 	 *
 	 * 200: OK
 	 * 401: Unauthorized
+	 * 409: An account with this ID exists and is not the admin of this group
 	 */
 	#[ApiRoute(verb: 'POST', url: '/api/{apiVersion}/admin-group', requirements: ['apiVersion' => '(v1)'])]
 	#[AuthorizedAdminSetting(settings:Users::class)]
@@ -76,13 +78,24 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		string $quota = '1Gb',
 		array $apps = [],
 	): DataResponse {
+		if ($email !== '' && !$this->mailer->validateMailAddress($email)) {
+			throw new OCSException('Invalid email');
+		}
+		try {
+			$this->userManager->validateUserId($groupid);
+		} catch (\InvalidArgumentException $exception) {
+			throw new OCSException($exception->getMessage(), 101);
+		}
+		if (!$this->canProvision($groupid)) {
+			return new DataResponse([], Http::STATUS_CONFLICT);
+		}
 		$group = $this->addGroup($groupid, $displayname);
-		$this->setGroupQuota($groupid, $quota);
-		$this->enableApps($apps, $groupid);
 		$user = $this->createUser($groupid, $displayname, $email);
-		$this->setUserQuota($user, $quota);
 		$group->addUser($user);
 		$this->addSubAdmin($user, $group);
+		$this->setGroupQuota($groupid, $quota);
+		$this->setUserQuota($user, $quota);
+		$this->enableApps($apps, $groupid);
 		return new DataResponse();
 	}
 
@@ -113,6 +126,9 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		}
 		$users = $group->getUsers();
 		foreach ($users as $user) {
+			if ($this->isAdministrator($user)) {
+				continue;
+			}
 			$user->setEnabled((bool)$enabled);
 		}
 		return new DataResponse();
@@ -183,9 +199,6 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			}
 		}
 		if ($email !== '') {
-			if (!$this->mailer->validateMailAddress($email)) {
-				throw new OCSException('Invalid email');
-			}
 			$user->setSystemEMailAddress($email);
 		}
 		return $user;
@@ -202,6 +215,9 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		if ($group instanceof IGroup) {
 			$users = $group->getUsers();
 			foreach ($users as $user) {
+				if ($this->isAdministrator($user)) {
+					continue;
+				}
 				$user->setEnabled(true);
 			}
 		} else {
@@ -216,6 +232,27 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			}
 		}
 		return $group;
+	}
+
+	private function canProvision(string $groupid): bool {
+		if (strtolower($groupid) === 'admin') {
+			return false;
+		}
+		$existingUser = $this->userManager->get($groupid);
+		if (!$existingUser instanceof IUser) {
+			return true;
+		}
+		if ($this->isAdministrator($existingUser)) {
+			return false;
+		}
+		$existingGroup = $this->groupManager->get($groupid);
+		return $existingGroup instanceof IGroup
+			&& $this->subAdmin->isSubAdminOfGroup($existingUser, $existingGroup);
+	}
+
+	private function isAdministrator(IUser $user): bool {
+		return $this->groupManager->isAdmin($user->getUID())
+			|| $this->groupManager->isDelegatedAdmin($user->getUID());
 	}
 
 	private function setGroupQuota(string $groupId, string $quota): void {
