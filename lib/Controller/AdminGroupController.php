@@ -22,6 +22,7 @@ use OCP\BackgroundJob\IJobList;
 use OCP\EventDispatcher\IEventDispatcher;
 use OCP\Group\ISubAdmin;
 use OCP\IAppConfig;
+use OCP\IConfig;
 use OCP\IGroup;
 use OCP\IGroupManager;
 use OCP\IRequest;
@@ -46,6 +47,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		protected IEventDispatcher $eventDispatcher,
 		protected ISecureRandom $secureRandom,
 		protected IJobList $jobList,
+		protected IConfig $config,
 	) {
 		parent::__construct($appName, $request);
 	}
@@ -188,6 +190,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			$password = $passwordEvent->getPassword() ?? $this->secureRandom->generate(20);
 
 			$user = $this->userManager->createUser($userId, $password);
+			$this->config->setUserValue($user->getUID(), 'wordpress_login_backend', 'wordpress_login', $user->getUID());
 		}
 
 		if ($displayName !== '') {
