@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace OCA\AdminGroupManager\Controller;
 
+use OCA\AdminGroupManager\AppInfo\Application;
 use OCA\AdminGroupManager\BackgroundJob\EnableAppsForGroup;
 use OCA\AdminGroupManager\Controller\Attribute\RestrictIp;
 use OCA\Settings\Settings\Admin\Users;
@@ -34,6 +35,8 @@ use OCP\Security\ISecureRandom;
 use Psr\Log\LoggerInterface;
 
 class AdminGroupController extends AEnvironmentAwareOCSController {
+	private const DISABLED_BY_BILLING = 'disabled_by_billing';
+
 	public function __construct(
 		$appName,
 		IRequest $request,
@@ -104,7 +107,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	/**
 	 * Set enabled status
 	 *
-	 * Change the status of all users of a group to be enabled or not.
+	 * Disable the enabled users of a group, or enable again only the users that this endpoint disabled. Administrators are never changed.
 	 *
 	 * @param string $groupid ID of the group
 	 * @param int<0, 1> $enabled 1 or 0
@@ -126,12 +129,16 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		if (!$group instanceof IGroup) {
 			return new DataResponse([], Http::STATUS_NOT_FOUND);
 		}
-		$users = $group->getUsers();
-		foreach ($users as $user) {
-			if ($this->isAdministrator($user)) {
+		if ($enabled) {
+			$this->enableUsersDisabledByBilling($group);
+			return new DataResponse();
+		}
+		foreach ($group->getUsers() as $user) {
+			if ($this->isAdministrator($user) || !$user->isEnabled()) {
 				continue;
 			}
-			$user->setEnabled((bool)$enabled);
+			$this->config->setUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING, '1');
+			$user->setEnabled(false);
 		}
 		return new DataResponse();
 	}
@@ -216,13 +223,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		// Check if it exists
 		$group = $this->groupManager->get($groupid);
 		if ($group instanceof IGroup) {
-			$users = $group->getUsers();
-			foreach ($users as $user) {
-				if ($this->isAdministrator($user)) {
-					continue;
-				}
-				$user->setEnabled(true);
-			}
+			$this->enableUsersDisabledByBilling($group);
 		} else {
 			$group = $this->groupManager->createGroup($groupid);
 		}
@@ -251,6 +252,19 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		$existingGroup = $this->groupManager->get($groupid);
 		return $existingGroup instanceof IGroup
 			&& $this->subAdmin->isSubAdminOfGroup($existingUser, $existingGroup);
+	}
+
+	private function enableUsersDisabledByBilling(IGroup $group): void {
+		foreach ($group->getUsers() as $user) {
+			if ($this->isAdministrator($user)) {
+				continue;
+			}
+			if ($this->config->getUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING) !== '1') {
+				continue;
+			}
+			$user->setEnabled(true);
+			$this->config->deleteUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING);
+		}
 	}
 
 	private function isAdministrator(IUser $user): bool {
