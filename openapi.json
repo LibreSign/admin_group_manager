@@ -193,7 +193,7 @@
             "post": {
                 "operationId": "admin_group-set-enabled",
                 "summary": "Set enabled status",
-                "description": "Change the status of all users of a group to be enabled or not.\nThis endpoint requires admin access",
+                "description": "Disable the enabled users of a group, or enable again only the users that this endpoint disabled. Administrators are never changed.\nThis endpoint requires admin access",
                 "tags": [
                     "admin_group"
                 ],
