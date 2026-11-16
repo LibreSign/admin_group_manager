@@ -141,6 +141,20 @@ export interface operations {
                     };
                 };
             };
+            /** @description An account with this ID exists and is not the admin of this group */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        ocs: {
+                            meta: components["schemas"]["OCSMeta"];
+                            data: unknown;
+                        };
+                    };
+                };
+            };
         };
     };
     "admin_group-set-enabled": {
