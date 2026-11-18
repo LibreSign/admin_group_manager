@@ -35,7 +35,7 @@ use OCP\Security\ISecureRandom;
 use Psr\Log\LoggerInterface;
 
 class AdminGroupController extends AEnvironmentAwareOCSController {
-	private const DISABLED_BY_BILLING = 'disabled_by_billing';
+	public const DISABLED_BY_BILLING = 'disabled_by_billing';
 
 	public function __construct(
 		$appName,
@@ -263,7 +263,6 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 				continue;
 			}
 			$user->setEnabled(true);
-			$this->config->deleteUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING);
 		}
 	}
 

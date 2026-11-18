@@ -9,12 +9,14 @@ declare(strict_types=1);
 namespace OCA\AdminGroupManager\AppInfo;
 
 use OCA\AdminGroupManager\Listener\BeforeUserAddedListener;
+use OCA\AdminGroupManager\Listener\UserEnabledListener;
 use OCA\AdminGroupManager\Middleware\InjectionMiddleware;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCP\Group\Events\BeforeUserAddedEvent;
+use OCP\User\Events\UserChangedEvent;
 
 /**
  * @codeCoverageIgnore
@@ -34,5 +36,6 @@ class Application extends App implements IBootstrap {
 	public function register(IRegistrationContext $context): void {
 		$context->registerMiddleWare(InjectionMiddleware::class);
 		$context->registerEventListener(BeforeUserAddedEvent::class, BeforeUserAddedListener::class);
+		$context->registerEventListener(UserChangedEvent::class, UserEnabledListener::class);
 	}
 }
