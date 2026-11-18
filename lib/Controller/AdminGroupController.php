@@ -107,7 +107,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 	/**
 	 * Set enabled status
 	 *
-	 * Disable the enabled users of a group, or enable again only the users that this endpoint disabled. Administrators are never changed.
+	 * Disable the enabled users of a group, or enable again the account that owns the group and the users that this endpoint disabled. Administrators are never changed.
 	 *
 	 * @param string $groupid ID of the group
 	 * @param int<0, 1> $enabled 1 or 0
@@ -251,7 +251,7 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 		}
 		$existingGroup = $this->groupManager->get($groupid);
 		return $existingGroup instanceof IGroup
-			&& $this->subAdmin->isSubAdminOfGroup($existingUser, $existingGroup);
+			&& $this->ownsGroup($existingUser, $existingGroup);
 	}
 
 	private function enableUsersDisabledByBilling(IGroup $group): void {
@@ -259,11 +259,17 @@ class AdminGroupController extends AEnvironmentAwareOCSController {
 			if ($this->isAdministrator($user)) {
 				continue;
 			}
-			if ($this->config->getUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING) !== '1') {
+			if (!$this->ownsGroup($user, $group)
+				&& $this->config->getUserValue($user->getUID(), Application::APP_ID, self::DISABLED_BY_BILLING) !== '1') {
 				continue;
 			}
 			$user->setEnabled(true);
 		}
+	}
+
+	private function ownsGroup(IUser $user, IGroup $group): bool {
+		return $user->getUID() === $group->getGID()
+			&& $this->subAdmin->isSubAdminOfGroup($user, $group);
 	}
 
 	private function isAdministrator(IUser $user): bool {
