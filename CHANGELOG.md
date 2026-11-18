@@ -15,7 +15,8 @@ Types of changes:
 <!-- changelog-linker -->
 ## Unreleased
 ### Security
-* Enabling the users of a group, on `users-of-group/set-enabled` or when the group is provisioned again, now only enables the users that `users-of-group/set-enabled` disabled. Users disabled by the group admin stay disabled. Users disabled by billing before this version are not enabled again automatically; the group admin enables them in the users settings.
+* Enabling the users of a group, on `users-of-group/set-enabled` or when the group is provisioned again, now only enables the account that owns the group and the users that `users-of-group/set-enabled` disabled. Users disabled by the group admin stay disabled, and a user enabled again by hand loses the billing mark. Members disabled by billing before this version are not enabled again automatically; the group admin enables them in the users settings.
+* The account created for the admin of a group is linked to the WordPress login of the same name, as `wordpress_login_backend` requires since its link check. Deploy this version before that one, then run `occ wordpress-login-backend:link-users --dry-run`, check the output and run it again without `--dry-run` to link the accounts created before.
 
 ## 0.1.1 - 2026-03-12
 ### Changed
