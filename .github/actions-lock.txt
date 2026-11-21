@@ -3,4 +3,4 @@
 
 # workflow-lock-schema: 3
 
-{"workflow":"npm-audit-fix.yml","sha256":"83014ebcc694e018a6e5d874c28199efb8c83d01f3e2451e8116f88d952ab2d5","catalog_commit":"b2013e836b49f1cf03db7c7257e9662539e971a8"}
+{"workflow":"npm-audit-fix.yml","sha256":"08d5cec37b75b607ae7bf21b9692a5aa50c503e5fc028c044f88864e20662e01","catalog_commit":"3af264ca6c15bf8799a38e7292916cc59c689f93"}
